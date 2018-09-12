@@ -15,9 +15,10 @@
  :resource-paths #{"resources"}
  :source-paths   #{"src" "test"}
 
- :dependencies '[[org.clojure/clojure       "1.9.0"]
-                 [clojure-future-spec       "LATEST"]
-                 [clj-jgit                  "0.8.10"]
+ :dependencies '[[org.clojure/clojure        "1.9.0"]
+                 [clojure-future-spec        "LATEST"]
+                 [clj-jgit                   "0.8.10"]
+                 [coconutpalm/clj-foundation "0.10.0"]
 
                  [coconutpalm/boot-boot     "LATEST" :scope "test"]])
 
