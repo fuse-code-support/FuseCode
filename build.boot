@@ -12,31 +12,31 @@
    :test-resources nil})
 
 (set-env!
- :dependencies '[[coconutpalm/boot-boot     "LATEST" :scope "test"]
+ :resource-paths #{"resources"}
+ :source-paths   #{"src" "test"}
 
+ :dependencies '[[org.clojure/clojure       "1.9.0"]
+                 [clojure-future-spec       "LATEST"]
                  [clj-jgit                  "0.8.10"]
 
-                 [adzerk/boot-jar2bin       "1.1.1" :scope "test"] ; https://github.com/adzerk-oss/boot-jar2bin
-                 [org.clojure/tools.nrepl   "0.2.13" :scope "test"]]
-
- :resource-paths #{"resources" "src/clj"}
- :source-paths   #{"src/cljs" "src/hl"})
+                 [coconutpalm/boot-boot     "LATEST" :scope "test"]])
 
 
+;; Require boot-boot tasks
 (require
- '[adzerk.boot-reload    :refer [reload]])
+ '[nightlight.boot     :refer [nightlight]]
+ '[adzerk.boot-jar2bin :refer [bin]]
+ '[clj-boot.core       :refer :all]
+ '[clojure.java.io     :as io])
 
 
-(deftask exe
-  "Build an executable binary."
-  []
-  (comp aot
-     pom
-     uber
-     jar
-     bin))
+;; Temporary until I can fix uberbin upstream
+(deftask makebin [] (comp (aot) (uberbin)))
 
+
+(set-task-options! task-options)
 
 (task-options!
  bin {:output-dir "bin"}
- exe {:output-dir "bin"})
+ jar {:main 'fusion.core}
+ aot {:namespace #{'fusion.core}})
