@@ -15,7 +15,7 @@
 (defn git-credentials-present? []
   (if (-> @config/settings :git-credentials :add-your-credentials)
     (do
-      (log/warn "No SSH credentials detected.  Edit " (config/fusion-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
+      (log/warn "SSH credentials not yet configured.  Edit " (config/fusion-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
       (log/info "If you wish, you can fork repositories mentioned in " (config/fusion-configfilename) " and edit " (config/fusion-configfilename) " to point to your versions.")
       false)
 
