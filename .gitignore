@@ -1,3 +1,5 @@
 .nightlight.edn
 bin
 target
+.nrepl-port
+logs

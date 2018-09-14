@@ -1,0 +1,20 @@
+{
+ :fusion-bootplugin-dir "bootstrap-plugin"
+
+ :git-credentials {:add-your-credentials "Please add your Git credentials here and then remove this line!"
+                   :name "~/.ssh/id_rsa"
+                   :exclusive true}
+
+ :boot-plugin-repo "git@github.com:/coconutpalm/fusion-boot"
+
+ :plugins [{:name "Code Notebook"
+            :init "boot-code.parensoup/do-init"}
+
+           {:name "Workbench"
+            :remote-repo "git@github.com:/coconutpalm/fusion-mz-light"
+            :init "fusion.workbench.ui/activate"}
+
+           {:name "CodeMirror Editor"
+            :remote-repo "git@github.com:/coconutpalm/fusion-cm"
+            :init "fusion.editor.ui/activate"}]
+ }
