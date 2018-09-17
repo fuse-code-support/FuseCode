@@ -20,7 +20,7 @@
 
         plugin-manager-common
         (letfn-map
-         [(bootplugin-dir [self])
+         [(plugin-dir [self])
 
           (secure-credentials-present? [self])
 
@@ -30,10 +30,10 @@
 
           (update [self]         (swap! update-count inc))])
 
-        plugin-manager_dir-exists (let-map [bootplugin-dir-exists (constantly true)
+        plugin-manager_dir-exists (let-map [plugin-dir-exists (constantly true)
                                             methods plugin-manager-common])
 
-        plugin-manager_dir-absent (let-map [bootplugin-dir-exists (constantly false)
+        plugin-manager_dir-absent (let-map [plugin-dir-exists (constantly false)
                                             methods plugin-manager-common])]
 
     (reset-tests)

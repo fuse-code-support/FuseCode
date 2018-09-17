@@ -11,9 +11,9 @@
 
 (def git-provider
   (letfn-map
-   [(bootplugin-dir [self] (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-bootplugin-dir))
+   [(plugin-dir [self] (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-plugin-dir))
 
-    (bootplugin-dir-exists [self] (file/exists (bootplugin-dir)))
+    (plugin-dir-exists [self] (file/exists (plugin-dir)))
 
     (secure-credentials-present?
      [self]
@@ -33,9 +33,9 @@
 
      (if (secure-credentials-present?)
        (jgit/with-identity (secure-credentials)
-         (jgit/git-clone-full origin (bootplugin-dir)))
+         (jgit/git-clone-full origin (plugin-dir)))
 
-       (jgit/git-clone-full origin (bootplugin-dir))))
+       (jgit/git-clone-full origin (plugin-dir))))
 
     (update
      [self]
@@ -43,13 +43,13 @@
 
      (if (secure-credentials-present?)
        (jgit/with-identity (secure-credentials)
-         (jgit/git-pull (jgit/load-repo (bootplugin-dir))))
+         (jgit/git-pull (jgit/load-repo (plugin-dir))))
 
-       (jgit/git-pull (jgit/load-repo (bootplugin-dir)))))]))
+       (jgit/git-pull (jgit/load-repo (plugin-dir)))))]))
 
 
 (defn download-or-update-boot-plugin [plugin-manager]
-  (if (=> plugin-manager :bootplugin-dir-exists)
+  (if (=> plugin-manager :plugin-dir-exists)
     (=> plugin-manager :update)
     (=> plugin-manager :install (-> @config/settings :boot-plugin-repo))))
 
