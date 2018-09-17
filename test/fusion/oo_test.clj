@@ -12,12 +12,14 @@
 (defn-spec arithmetic map?
   "Constructor for arithmetic"
   []
-  (letfn-map [(plusfive [self x] (+ x 5))]))
+  (letfn-map [(alwaysone [self] 1)
+              (plusfive [self x] (+ x 5))]))
 
 
 (deftest =>-map-of-fns
   (let [o (arithmetic)]
 
+    (is 1 (=> o :alwaysone))
     (is 6 (=> o :plusfive 1))))
 
 
