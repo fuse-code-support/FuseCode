@@ -9,14 +9,13 @@
             [fusion.config :as config]))
 
 
-;; TODO : add logging
-(defn bootplugin-dir []
-  (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-bootplugin-dir))
-
-
 (def git-provider
   (letfn-map
-   [(secure-credentials-present?
+   [(bootplugin-dir [self] (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-bootplugin-dir))
+
+    (bootplugin-dir-exists [self] (file/exists (bootplugin-dir)))
+
+    (secure-credentials-present?
      [self]
      (if (-> @config/settings :git-credentials :add-your-credentials)
        (do
@@ -26,10 +25,10 @@
 
        true))
 
-    (secure-credentials [] (-> @config/settings :git-credentials))
+    (secure-credentials [self] (-> @config/settings :git-credentials))
 
     (install
-     [self install-dir origin]
+     [self origin]
      (log/info "No " @config/settings " directory found.  Initializing for first run.")
 
      (if (secure-credentials-present?)
@@ -39,7 +38,7 @@
        (jgit/git-clone-full origin (bootplugin-dir))))
 
     (update
-     [self plugin-dir]
+     [self]
      (log/info @config/settings " directory found.  Updating.")
 
      (if (secure-credentials-present?)
@@ -50,9 +49,9 @@
 
 
 (defn download-or-update-boot-plugin [plugin-manager]
-  (if (file/exists (bootplugin-dir))
-    (=> plugin-manager :update (bootplugin-dir))
-    (=> plugin-manager :install (bootplugin-dir) (-> @config/settings :boot-plugin-repo))))
+  (if (=> plugin-manager :bootplugin-dir-exists)
+    (=> plugin-manager :update)
+    (=> plugin-manager :install (-> @config/settings :boot-plugin-repo))))
 
 
 (defn launch-boot-plugin [])
