@@ -3,6 +3,8 @@
             [clojure.java.io :as io]
             [clj-jgit.porcelain :as jgit]
 
+            [fusion.oo :refer [=>]]
+            [fusion.patterns :refer [letfn-map]]
             [fusion.files :as file]
             [fusion.config :as config]))
 
@@ -12,45 +14,50 @@
   (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-bootplugin-dir))
 
 
-(defn git-credentials-present? []
-  (if (-> @config/settings :git-credentials :add-your-credentials)
-    (do
-      (log/warn "SSH credentials not yet configured.  Edit " (config/fusion-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
-      (log/info "If you wish, you can fork repositories mentioned in " (config/fusion-configfilename) " and edit " (config/fusion-configfilename) " to point to your versions.")
-      false)
+(def git-provider
+  (letfn-map
+   [(secure-credentials-present?
+     [self]
+     (if (-> @config/settings :git-credentials :add-your-credentials)
+       (do
+         (log/warn "SSH credentials not yet configured.  Edit " (config/fusion-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
+         (log/info "If you wish, you can fork repositories mentioned in " (config/fusion-configfilename) " and edit " (config/fusion-configfilename) " to point to your versions.")
+         false)
 
-    true))
+       true))
+
+    (secure-credentials [] (-> @config/settings :git-credentials))
+
+    (install
+     [self install-dir origin]
+     (log/info "No " @config/settings " directory found.  Initializing for first run.")
+
+     (if (secure-credentials-present?)
+       (jgit/with-identity (secure-credentials)
+         (jgit/git-clone-full origin (bootplugin-dir)))
+
+       (jgit/git-clone-full origin (bootplugin-dir))))
+
+    (update
+     [self plugin-dir]
+     (log/info @config/settings " directory found.  Updating.")
+
+     (if (secure-credentials-present?)
+       (jgit/with-identity (secure-credentials)
+         (jgit/git-pull (jgit/load-repo (bootplugin-dir))))
+
+       (jgit/git-pull (jgit/load-repo (bootplugin-dir)))))]))
 
 
-(defn update-boot-plugin []
-  (log/info @config/settings " directory found.  Updating.")
-
-  (if (git-credentials-present?)
-    (jgit/with-identity (-> @config/settings :git-credentials)
-      (jgit/git-pull (jgit/load-repo (bootplugin-dir))))
-
-    (jgit/git-pull (jgit/load-repo (bootplugin-dir)))))
-
-
-(defn clone-boot-plugin []
-  (log/info "No " @config/settings " directory found.  Initializing for first run.")
-
-  (if (git-credentials-present?)
-    (jgit/with-identity (-> @config/settings :git-credentials)
-      (jgit/git-clone-full (-> @config/settings :boot-plugin-repo) (bootplugin-dir)))
-
-    (jgit/git-clone-full (-> @config/settings :boot-plugin-repo) (bootplugin-dir))))
-
-
-(defn download-or-update-boot-plugin []
+(defn download-or-update-boot-plugin [plugin-manager]
   (if (file/exists (bootplugin-dir))
-    (update-boot-plugin)
-    (clone-boot-plugin)))
+    (=> plugin-manager :update (bootplugin-dir))
+    (=> plugin-manager :install (bootplugin-dir) (-> @config/settings :boot-plugin-repo))))
 
 
 (defn launch-boot-plugin [])
 
 
 (defn start []
-  (download-or-update-boot-plugin)
+  (download-or-update-boot-plugin git-provider)
   (launch-boot-plugin))
