@@ -5,6 +5,9 @@
             [clojure.pprint :refer [pprint]]
             [clojure.tools.logging :as log]
 
+            [clojure.spec.alpha :as s]
+            [orchestra.core :refer [defn-spec]]
+
             [fusion.files :as f]
             [fusion.patterns :refer [let-map]]
 
@@ -19,20 +22,32 @@
 
 (def settings (atom {:error "No settings have been loaded!"}))
 
+(s/def ::configfile-path (s/nilable (s/? string?)))
 
-(defn create-or-read
-  "Create if necessary, and read bootstrap-config. Returns a map containing the config file contents."
-  [& configfile-path]
 
+(defn-spec process-configfile-location-commandline-override any? [configfile-path ::configfile-path]
   (when (and configfile-path (string? (first configfile-path)))
-    (reset! fusion-plugin-dir (first configfile-path)))
+    (log/info (str "Overriding default configuration file path with " (first configfile-path)))
+    (reset! fusion-plugin-dir (first configfile-path))))
+
+
+(defn-spec ensure-configfile-exists any? [fusion-config string?]
+  (io/make-parents fusion-config)
+
+  (when-not (.exists (io/file fusion-config))
+    (log/info (str "First time run: Creating " fusion-config))
+    (spit fusion-config default-configfile)))
+
+
+(defn-spec create-or-read map?
+  "Create if necessary, and read bootstrap-config. Returns a map containing the config file contents."
+  [& configfile-path ::configfile-path]
+
+  (process-configfile-location-commandline-override configfile-path)
 
   (let [fusion-config (fusion-configfilename)]
-    (io/make-parents fusion-config)
-
-    (when-not (.exists (io/file fusion-config))
-      (log/info (str "First time run: Creating " fusion-config))
-      (spit fusion-config default-configfile))
+    (ensure-configfile-exists fusion-config)
 
     (reset! settings (edn/read-string (slurp fusion-config)))
+    (log/info "Successfully read configuration file")
     @settings))
