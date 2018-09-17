@@ -14,8 +14,8 @@
   (let [root-value (get o method-key)]
     (if root-value
       root-value
-      (when (:vtable o)
-        (find-method (:vtable o) method-key)))))
+      (when (:methods o)
+        (find-method (:methods o) method-key)))))
 
 
 (defn =>

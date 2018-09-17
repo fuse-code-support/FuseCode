@@ -14,8 +14,8 @@
   (let-map [first-name first
             last-name last
 
-            vtable (letfn-map
-                    [(full-name [self] (str first-name " " last-name))])]))
+            methods (letfn-map
+                     [(full-name [self] (str first-name " " last-name))])]))
 
 
 (deftest =>-object-with-methods_uniform-property-and-method-access
