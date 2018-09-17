@@ -4,13 +4,21 @@
             [fusion.oo :refer :all]))
 
 
+(defn arithmetic
+  "Constructor for arithmetic"
+  []
+  (letfn-map [(plusfive [self x] (+ x 5))]))
+
+
 (deftest =>-map-of-fns
-  (let [o (letfn-map [(plusfive [self x] (+ x 5))])]
+  (let [o (arithmetic)]
 
     (is 6 (=> o :plusfive 1))))
 
 
-(defn person-name [first last]
+(defn person-name
+  "Constructor for person-name"
+  [first last]
   (let-map [first-name first
             last-name last
 
