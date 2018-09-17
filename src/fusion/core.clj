@@ -1,6 +1,7 @@
 (ns fusion.core
   (:require [adzerk.boot-logservice :as log-service]
             [clojure.tools.logging  :as log]
+            [orchestra.spec.test :as st]
 
             [fusion.config          :as config]
             [fusion.launch          :as launch])
@@ -33,6 +34,8 @@
 (defn -main
   "Fusion Editor main method (for command-line execution)"
   [& args]
+
+  (st/instrument)                       ; Enable type checking of type-annotated functions
 
   (configure-logging)
   (log/info "Preparing to fuse atoms")
