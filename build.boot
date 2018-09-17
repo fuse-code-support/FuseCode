@@ -18,13 +18,13 @@
  :resource-paths #{"resources"}
  :source-paths   #{"src" "test"}
 
- :dependencies '[[org.clojure/clojure        "1.9.0"]
-                 [clojure-future-spec        "LATEST"]
-                 [org.clojure/tools.logging "0.3.1"]
-                 [adzerk/boot-logservice "1.2.0"]
+ :dependencies '[[org.clojure/clojure          "1.9.0"]
+                 [orchestra                    "2018.09.10-1"]
+                 [org.clojure/tools.logging    "0.3.1"]
+                 [adzerk/boot-logservice       "1.2.0"]
 
-                 [boot                       "2.8.1"]
-                 [clj-jgit                   "0.8.10"]
+                 [boot                         "2.8.1"]
+                 [clj-jgit                    "0.8.10"]
 
                  [coconutpalm/boot-boot     "LATEST" :scope "test"]])
 
