@@ -1,20 +1,23 @@
 {
- :fusion-bootplugin-dir "bootstrap-plugin"
+ :clojure-version  "1.9.0"
+ :boot-clj-version "2.8.2"
+
+ :fusion-port           7000
+ :fusion-bootplugin-dir "fusion-boot"
+ :boot-plugin-repo      "https://github.com/fusion-editor/fusion-boot.git"
+ :bootstrap-task        "web-dev"
 
  :git-credentials {:add-your-credentials "Please add your Git credentials here and then remove this line!"
                    :name "~/.ssh/id_rsa"
                    :exclusive true}
 
- :boot-plugin-repo "git@github.com:/coconutpalm/fusion-boot"
+ ;; TODO: Add set of default plugins here, or maybe find a better way to inject this into the build?
+ :plugins [#_{:name "Code Notebook"
+              :init "boot-code.parensoup/do-init"}
 
- :plugins [{:name "Code Notebook"
-            :init "boot-code.parensoup/do-init"}
+           #_{:name "Workbench"
+              :remote-repo "git@github.com:/coconutpalm/fusion-mz-light"}
 
-           {:name "Workbench"
-            :remote-repo "git@github.com:/coconutpalm/fusion-mz-light"
-            :init "fusion.workbench.ui/activate"}
-
-           {:name "CodeMirror Editor"
-            :remote-repo "git@github.com:/coconutpalm/fusion-cm"
-            :init "fusion.editor.ui/activate"}]
+           #_{:name "CodeMirror Editor"
+              :remote-repo "git@github.com:/coconutpalm/fusion-cm"}]
  }

@@ -6,14 +6,18 @@
             [fusion.oo :refer [=>]]
             [fusion.patterns :refer [letfn-map]]
             [fusion.files :as file]
-            [fusion.config :as config]))
+            [fusion.config :as config])
+
+  (:import [java.util ArrayList List]
+           [java.net URLClassLoader URL]
+           [java.nio.file Files Path StandardCopyOption]))
 
 
 (def git-provider
   (letfn-map
-   [(plugin-dir [self] (str @config/fusion-plugin-dir) "/" (-> @config/settings :fusion-plugin-dir))
+   [(plugin-dir [self] (str @config/fusion-plugin-dir "/" (-> @config/settings :fusion-bootplugin-dir)))
 
-    (plugin-dir-exists [self] (file/exists (plugin-dir)))
+    (plugin-dir-exists [self] (file/exists (plugin-dir self)))
 
     (secure-credentials-present?
      [self]
@@ -29,23 +33,23 @@
 
     (install
      [self origin]
-     (log/info "No " @config/settings " directory found.  Initializing for first run.")
+     (log/info "No " (plugin-dir self) " directory found.  Initializing for first run.")
 
-     (if (secure-credentials-present?)
-       (jgit/with-identity (secure-credentials)
-         (jgit/git-clone-full origin (plugin-dir)))
+     (if (secure-credentials-present? self)
+       (jgit/with-identity (secure-credentials self)
+         (jgit/git-clone-full origin (plugin-dir self)))
 
-       (jgit/git-clone-full origin (plugin-dir))))
+       (jgit/git-clone-full origin (plugin-dir self))))
 
     (update
      [self]
-     (log/info @config/settings " directory found.  Updating.")
+     (log/info (plugin-dir self) " directory found.  Updating.")
 
-     (if (secure-credentials-present?)
-       (jgit/with-identity (secure-credentials)
-         (jgit/git-pull (jgit/load-repo (plugin-dir))))
+     (if (secure-credentials-present? self)
+       (jgit/with-identity (secure-credentials self)
+         (jgit/git-pull (jgit/load-repo (plugin-dir self))))
 
-       (jgit/git-pull (jgit/load-repo (plugin-dir)))))]))
+       (jgit/git-pull (jgit/load-repo (plugin-dir self)))))]))
 
 
 (defn download-or-update-boot-plugin [plugin-manager]
@@ -54,9 +58,35 @@
     (=> plugin-manager :install (-> @config/settings :boot-plugin-repo))))
 
 
-(defn launch-boot-plugin [])
+(defn invoke [classloader method & args]
+  (let [mainClass (.loadClass classloader "boot.Boot")
+        boot (.getMethod mainClass method (into-array Class [List]))]
+    (.invoke boot nil (object-array (if args args [])))))
+
+
+(defn launch-boot-plugin [plugin-manager]
+  (log/info "Launching bootstrap plugin")
+  (let [buildfile (str (=> plugin-manager :plugin-dir) "/build.boot")
+        localrepo (str @config/fusion-plugin-dir "/_localrepo")
+        bootstrap-jar-file (io/file (str @config/fusion-plugin-dir "/_bootstrap.jar"))
+        boot-arguments ["--file" buildfile (-> @config/settings :bootstrap-task)]
+        isolated-classloader (URLClassLoader. (into-array URL [(.toURL (.toURI bootstrap-jar-file))])
+                                              (.getParent (ClassLoader/getSystemClassLoader)))]
+
+    (System/setProperty "user.dir" (=> plugin-manager :plugin-dir))
+    (System/setProperty "boot.app.path" @config/fusion-plugin-dir)
+    (System/setProperty "BOOT_LOCAL_REPO" localrepo)
+    (System/setProperty "BOOT_VERSION" (:boot-clj-version @config/settings))
+    (System/setProperty "BOOT_CLOJURE_VERSION" (:clojure-version @config/settings))
+
+    (with-open [in (io/input-stream (io/resource "bootstrap.jar"))]
+      (io/copy in bootstrap-jar-file))
+
+    (log/info (str "boot " boot-arguments))
+    (.setContextClassLoader (Thread/currentThread) isolated-classloader)
+    (invoke isolated-classloader "bootBoot" (ArrayList. boot-arguments))))
 
 
 (defn start []
   (download-or-update-boot-plugin git-provider)
-  (launch-boot-plugin))
+  (launch-boot-plugin git-provider))

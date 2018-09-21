@@ -16,34 +16,67 @@
 
 (set-env!
  :resource-paths #{"resources"}
- :source-paths   #{"src" "test"}
+ :source-paths   #{"src" "java" "test"}
 
- :dependencies '[[org.clojure/clojure          "1.9.0"]
-                 [orchestra                    "2018.09.10-1"]
-                 [org.clojure/tools.logging    "0.3.1"]
-                 [adzerk/boot-logservice       "1.2.0"]
+ :dependencies '[[org.clojure/clojure       "1.9.0"]
+                 [orchestra                 "2018.09.10-1"]
 
-                 [boot                         "2.8.1"]
-                 [clj-jgit                    "0.8.10"]
+                 [org.clojure/tools.logging "0.3.1"]
+                 [ch.qos.logback/logback-classic "1.1.3"]
 
+                 [clj-jgit                  "0.8.10"]
+
+                 [cpmcdaniel/boot-copy      "1.0" :scope "test"]
                  [coconutpalm/boot-boot     "LATEST" :scope "test"]])
 
 
 ;; Require boot-boot tasks
 (require
- '[nightlight.boot     :refer [nightlight]]
- '[adzerk.boot-jar2bin :refer [bin]]
- '[clj-boot.core       :refer :all]
- '[clojure.java.io     :as io])
+ '[nightlight.boot      :refer [nightlight]]
+ '[adzerk.boot-jar2bin  :refer [bin]]
+ '[clj-boot.core        :refer :all]
+
+ '[clojure.java.io      :as io])
 
 
-;; Temporary until I can fix uberbin upstream
-(deftask makebin [] (comp (aot) (uberbin)))
+(deftask copy-bootstrap-to-resources
+  "copy bootstrap.jar from the target folder to the bin folder"
+  []
+  (fn [next-handler]
+    (fn [fileset]
+      (next-handler fileset)
+      (io/copy (io/file "target/bootstrap.jar") (io/file "resources/bootstrap.jar")))))
+
+
+(deftask remove-bootstrap-binary
+  "Remove bin/bootstrap since it's now embedded inside the \"fuse\" binary."
+  []
+  (fn [next-handler]
+    (fn [fileset]
+      (next-handler fileset)
+      (io/delete-file "bin/bootstrap" true))))
+
+
+(deftask boot-bin []
+  (comp
+   (javac)
+   (jar :file "bootstrap.jar" :main 'boot.Boot)
+   (target)
+   (copy-bootstrap-to-resources)))
+
+
+(deftask fusion-bin []
+  (comp
+   (aot :all true)
+   (uberbin)))
+
+
+(deftask all [] (comp (boot-bin) (fusion-bin) (remove-bootstrap-binary)))
 
 
 (set-task-options! task-options)
 
 (task-options!
  bin {:output-dir "bin"}
- jar {:main 'fusion.core}
+ jar {:main 'fusion.core :file "fuse.jar"}
  aot {:namespace #{'fusion.core}})
