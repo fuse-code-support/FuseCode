@@ -1,6 +1,7 @@
 # fusion-main
 
-The fusion editor main.  Opens files from the command-line.  Launches the server process if necessary.
+The fusion editor main.  Downloads and updates the main plugin.  Opens files from the command-line.
+Launches the server process if necessary.
 
 ## TODOs
 
