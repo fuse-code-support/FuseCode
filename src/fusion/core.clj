@@ -1,6 +1,5 @@
 (ns fusion.core
-  (:require #_[adzerk.boot-logservice :as log-service]
-            [clojure.tools.logging  :as log]
+  (:require [clojure.tools.logging  :as log]
             [orchestra.spec.test :as st]
 
             [fusion.config          :as config]
@@ -14,7 +13,6 @@
 
   (st/instrument)                       ; Enable type checking of type-annotated functions
 
-  ;; TODO: Configure tools.logging here
   (log/info "Preparing to fuse atoms")
   (config/create-or-read)
   (launcher/start))

@@ -18,16 +18,17 @@
  :resource-paths #{"resources"}
  :source-paths   #{"src" "java" "test"}
 
- :dependencies '[[org.clojure/clojure       "1.9.0"]
-                 [orchestra                 "2018.09.10-1"]
+ :dependencies '[[org.clojure/clojure            "1.9.0"]
+                 [org.clojure/tools.cli          "0.4.1"]
+                 [orchestra                      "2018.09.10-1"]
 
-                 [org.clojure/tools.logging "0.3.1"]
+                 [org.clojure/tools.logging      "0.3.1"]
                  [ch.qos.logback/logback-classic "1.1.3"]
 
-                 [clj-jgit                  "0.8.10"]
+                 [clj-jgit                       "0.8.10"]
 
-                 [cpmcdaniel/boot-copy      "1.0" :scope "test"]
-                 [coconutpalm/boot-boot     "LATEST" :scope "test"]])
+                 [cpmcdaniel/boot-copy           "1.0" :scope "test"]
+                 [coconutpalm/boot-boot          "LATEST" :scope "test"]])
 
 
 ;; Require boot-boot tasks
