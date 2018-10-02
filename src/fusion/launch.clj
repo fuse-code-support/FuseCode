@@ -13,6 +13,7 @@
            [java.nio.file Files Path StandardCopyOption]))
 
 
+;; Use the fusion.oo mechanism because the tests want inheritance
 (def git-provider
   (letfn-map
    [(plugin-dir [self] (str @config/fusion-plugin-dir "/" (-> @config/settings :fusion-bootplugin-dir)))
