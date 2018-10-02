@@ -50,9 +50,3 @@
 
     (is (= 1 @install-count) "Expected install when dir absent")
     (is (= 0 @update-count) "Expected no update when dir absent")))
-
-
-;; Only works when Java classes are compiled into the binary, which we don't normally want
-#_(deftest invoke_test
-  (let [loader (.getContextClassLoader (Thread/currentThread))]
-    (invoke loader "testInvoke" (ArrayList. ["one" "two"]) )))
