@@ -6,7 +6,9 @@ Launches the server process if necessary.
 ## TODOs
 
 * NOW
-  * Find/use a clojure arg-processing lib here and in fusion-boot
+  * Rename to FuseCode *DONE*
+    * .fusion folder default name
+   * Find/use a clojure arg-processing lib here and in fusion-boot
   * Read :fusion-port from config and pass to bootstrap plugin main
   * Detect if server is already running and pass files to open to existing server
   * process file(s) to open
@@ -22,7 +24,7 @@ Launches the server process if necessary.
   * (newboot "--command" "line" "--arguments") - factor classpath-isolated Boot into a library function
   * Config file processing
   * Files
-  * OO (Should this really be a defprotocol?)
+  * OO (Should this really be a defprotocol? *DONE* (No--the tests use inheritence in the stub implementations)
   * Patterns
 
 * Make a classloader for (newboot) capable of operating from memory rather than extracting _bootstrap.jar to a file.
