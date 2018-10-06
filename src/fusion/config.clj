@@ -43,7 +43,7 @@
 
 
 ;; The loader's own configuration is a resource
-(def fusion-plugin-dir (atom (f/expand-path "~/.fusion")))
+(def fusion-plugin-dir (atom (f/expand-path "~/.fusecode")))
 (defn fusion-configfilename [] (str @fusion-plugin-dir "/_config.edn"))
 
 (def default-configfile (slurp (io/resource "config.edn")))
