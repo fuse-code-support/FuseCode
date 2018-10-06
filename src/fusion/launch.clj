@@ -3,6 +3,9 @@
             [clojure.java.io :as io]
             [clj-jgit.porcelain :as jgit]
 
+            [clojure.spec.alpha :as s]
+            [orchestra.core :refer [defn-spec]]
+
             [fusion.oo :refer [=>]]
             [fusion.patterns :refer [letfn-map]]
             [fusion.files :as file]
@@ -11,6 +14,10 @@
   (:import [java.util ArrayList List]
            [java.net URLClassLoader URL]
            [java.nio.file Files Path StandardCopyOption]))
+
+
+(defn-spec attach-open boolean? [options map? files seq?]
+  (log/info "Attaching to running server (if possible)"))
 
 
 ;; Use the fusion.oo mechanism because the tests want inheritance
@@ -88,6 +95,6 @@
     (invoke isolated-classloader "bootBoot" (ArrayList. boot-arguments))))
 
 
-(defn start []
+(defn start [options files]
   (download-or-update-boot-plugin git-provider)
   (launch-boot-plugin git-provider))
