@@ -7,14 +7,30 @@ Launches the server process if necessary.
 
 * NOW
   * Rename to FuseCode *DONE*
-    * .fusion folder default name
-   * Find/use a clojure arg-processing lib here and in fusion-boot
-  * Read :fusion-port from config and pass to bootstrap plugin main
+    * .fusion folder default name *DONE*
+  * Find/use a clojure arg-processing lib
+    * here *DONE*
+    * and in fusion-boot
+  * Read default :fusion-port from config and pass to bootstrap plugin main
   * Detect if server is already running and pass files to open to existing server
   * process file(s) to open
 
 * Process command-line arguments:  (find/use a clojure arg-processing lib)
-  * Override .fusion folder
+  * In config/create-or-read
+    * :fusecode-dir *DONE*
+    * :offline
+  * In launcher/attach-open
+    * :port / :host
+    * :new-window
+    * pass files to open to server
+  * In launcher/start
+    * :fusecode-dir (may be automatic with config changes?)
+    * Add relevent fusion.core options to :tasks for Boot
+      * :port / :host
+      * :new-window
+      * :offline
+
+  * Override .fusion folder *DONE*
   * Override boot task
   * Override default port
   * Boot pass-through options
