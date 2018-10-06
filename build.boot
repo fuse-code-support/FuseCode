@@ -21,6 +21,7 @@
  :dependencies '[[org.clojure/clojure            "1.9.0"]
                  [org.clojure/tools.cli          "0.4.1"]
                  [orchestra                      "2018.09.10-1"]
+                 [http-kit                       "2.3.0"]
 
                  [org.clojure/tools.logging      "0.3.1"]
                  [ch.qos.logback/logback-classic "1.1.3"]
