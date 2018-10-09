@@ -6,6 +6,8 @@
             [clojure.spec.alpha :as s]
             [orchestra.core :refer [defn-spec]]
 
+            [org.httpkit.client :as http]
+
             [fusion.oo :refer [=>]]
             [fusion.patterns :refer [letfn-map]]
             [fusion.files :as file]
@@ -17,7 +19,15 @@
 
 
 (defn-spec attach-open boolean? [options map? files seq?]
-  (log/info "Attaching to running server (if possible)"))
+  (log/info "Attaching to running server (if possible)")
+  (let [response @(http/request {:url (str"http://" (:host options) ":" (:port options) "/attach-open")
+                                 :method :post
+                                 :user-agent "FuseCode Launcher"
+                                 :headers {"Content-Type" "text/plain"}
+                                 :body (pr-str {:new-window (:new-window options)
+                                                :open-files files})
+                                 :follow-redirects false})]
+    (= (:body response) "Accepted attach request")))
 
 
 ;; Use the fusion.oo mechanism because the tests want inheritance
