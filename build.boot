@@ -67,13 +67,13 @@
    (copy-bootstrap-to-resources)))
 
 
-(deftask fusion-bin []
+(deftask fuse-bin []
   (comp
    (aot :all true)
    (uberbin)))
 
 
-(deftask all [] (comp (boot-bin) (fusion-bin) (remove-bootstrap-binary)))
+(deftask all [] (comp (boot-bin) (fuse-bin) (remove-bootstrap-binary)))
 
 
 (set-task-options! task-options)
