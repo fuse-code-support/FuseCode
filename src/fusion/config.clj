@@ -50,12 +50,14 @@
 
 (def settings (atom {:error "No settings have been loaded!"}))
 
-(s/def ::configfile-path (s/? (s/cat :path (s/? string?))))
+
+(s/def ::file-path string?)
+(s/def ::configfile-settings (s/keys :opt-un [::file-path])) ; A Map spec with optional keys!
 
 
-(defn-spec process-configfile-location-commandline-override any? [configfile-path ::configfile-path]
-  (when (and configfile-path (string? (first configfile-path)))
-    (let [expanded-path (f/expand-path (first configfile-path))]
+(defn-spec process-configfile-location-commandline-override any? [configfile-path (s/nilable ::file-path)]
+  (when (and configfile-path (string? configfile-path))
+    (let [expanded-path (f/expand-path configfile-path)]
       (log/info (str "Overriding default configuration file path with " expanded-path))
       (reset! fusion-plugin-dir expanded-path))))
 
@@ -70,9 +72,9 @@
 
 (defn-spec create-or-read map?
   "Create if necessary, and read bootstrap-config. Returns a map containing the config file contents."
-  [& configfile-path ::configfile-path]
+  [& configfile-path ::configfile-settings]
 
-  (process-configfile-location-commandline-override configfile-path)
+  (process-configfile-location-commandline-override (:file-path configfile-path))
 
   (let [fusion-config (fusion-configfilename)]
     (ensure-configfile-exists fusion-config)

@@ -18,7 +18,7 @@
            [java.nio.file Files Path StandardCopyOption]))
 
 
-(defn-spec attach-open boolean? [options map? files seq?]
+(defn-spec attach-open boolean? [options map? files (s/* string?)]
   (log/info "Attaching to running server (if possible)")
   (let [response @(http/request {:url (str"http://" (:host options) ":" (:port options) "/attach-open")
                                  :method :post
