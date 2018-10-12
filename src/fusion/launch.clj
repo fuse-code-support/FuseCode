@@ -85,7 +85,7 @@
 (defn launch-boot-plugin [plugin-manager]
   (log/info "Launching bootstrap plugin")
   (let [buildfile (str (=> plugin-manager :plugin-dir) "/build.boot")
-        localrepo (str @config/fusion-plugin-dir "/_localrepo")
+        localrepo (str @config/fusion-plugin-dir "/_dependencies")
         bootstrap-jar-file (io/file (str @config/fusion-plugin-dir "/_bootstrap.jar"))
         boot-arguments ["--file" buildfile (-> @config/settings :bootstrap-task)]
         isolated-classloader (URLClassLoader. (into-array URL [(.toURL (.toURI bootstrap-jar-file))])
