@@ -1,5 +1,5 @@
 .nightlight.edn
-bin
+/bin
 target
 .nrepl-port
 .nrepl-history
