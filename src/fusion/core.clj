@@ -14,7 +14,7 @@
 
 
 (def cli-options
-  [["-p" "--port         PORT" "Server port.  (precedence= [command-line-port# config-file-port# default-port#])"
+  [["-p" "--port         PORT" "Port.  (precedence= [command-line-port# config-file-port# default-port#])"
     :default 7000
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]

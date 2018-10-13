@@ -33,7 +33,7 @@
 ;; Use the fusion.oo mechanism because the tests want inheritance
 (def git-provider
   (letfn-map
-   [(plugin-dir [self] (str @config/fusion-plugin-dir "/" (-> @config/settings :fusion-bootplugin-dir)))
+   [(plugin-dir [self] (str @config/fuse-plugin-dir "/" (-> @config/settings :fuse-bootplugin-dir)))
 
     (plugin-dir-exists [self] (file/exists (plugin-dir self)))
 
@@ -41,8 +41,8 @@
      [self]
      (if (-> @config/settings :git-credentials :add-your-credentials)
        (do
-         (log/warn "SSH credentials not yet configured.  Edit " (config/fusion-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
-         (log/info "If you wish, you can fork repositories mentioned in " (config/fusion-configfilename) " and edit " (config/fusion-configfilename) " to point to your versions.")
+         (log/warn "SSH credentials not yet configured.  Edit " (config/fuse-configfilename) " and remove the :add-your-credentials key-value pair after adding your Github credentials.")
+         (log/info "If you wish, you can fork repositories mentioned in " (config/fuse-configfilename) " and edit " (config/fuse-configfilename) " to point to your versions.")
          false)
 
        true))
@@ -85,14 +85,14 @@
 (defn launch-boot-plugin [plugin-manager]
   (log/info "Launching bootstrap plugin")
   (let [buildfile (str (=> plugin-manager :plugin-dir) "/build.boot")
-        localrepo (str @config/fusion-plugin-dir "/_dependencies")
-        bootstrap-jar-file (io/file (str @config/fusion-plugin-dir "/_bootstrap.jar"))
+        localrepo (str @config/fuse-plugin-dir "/_dependencies")
+        bootstrap-jar-file (io/file (str @config/fuse-plugin-dir "/_bootstrap.jar"))
         boot-arguments ["--file" buildfile (-> @config/settings :bootstrap-task)]
         isolated-classloader (URLClassLoader. (into-array URL [(.toURL (.toURI bootstrap-jar-file))])
                                               (.getParent (ClassLoader/getSystemClassLoader)))]
 
     (System/setProperty "user.dir" (=> plugin-manager :plugin-dir))
-    (System/setProperty "boot.app.path" @config/fusion-plugin-dir)
+    (System/setProperty "boot.app.path" @config/fuse-plugin-dir)
     (System/setProperty "BOOT_LOCAL_REPO" localrepo)
     (System/setProperty "BOOT_VERSION" (:boot-clj-version @config/settings))
     (System/setProperty "BOOT_CLOJURE_VERSION" (:clojure-version @config/settings))

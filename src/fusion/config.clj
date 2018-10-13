@@ -43,8 +43,8 @@
 
 
 ;; The loader's own configuration is a resource
-(def fusion-plugin-dir (atom (f/expand-path "~/.fusecode")))
-(defn fusion-configfilename [] (str @fusion-plugin-dir "/_config.edn"))
+(def fuse-plugin-dir (atom (f/expand-path "~/.fusecode")))
+(defn fuse-configfilename [] (str @fuse-plugin-dir "/_config.edn"))
 
 (def default-configfile (slurp (io/resource "config.edn")))
 
@@ -59,15 +59,15 @@
   (when (and configfile-path (string? configfile-path))
     (let [expanded-path (f/expand-path configfile-path)]
       (log/info (str "Overriding default configuration file path with " expanded-path))
-      (reset! fusion-plugin-dir expanded-path))))
+      (reset! fuse-plugin-dir expanded-path))))
 
 
-(defn-spec ensure-configfile-exists any? [fusion-config string?]
-  (io/make-parents fusion-config)
+(defn-spec ensure-configfile-exists any? [fuse-config string?]
+  (io/make-parents fuse-config)
 
-  (when-not (.exists (io/file fusion-config))
-    (log/info (str "First time run: Creating " fusion-config))
-    (spit fusion-config default-configfile)))
+  (when-not (.exists (io/file fuse-config))
+    (log/info (str "First time run: Creating " fuse-config))
+    (spit fuse-config default-configfile)))
 
 
 (defn-spec create-or-read map?
@@ -76,9 +76,9 @@
 
   (process-configfile-location-commandline-override (:file-path configfile-path))
 
-  (let [fusion-config (fusion-configfilename)]
-    (ensure-configfile-exists fusion-config)
+  (let [fuse-config (fuse-configfilename)]
+    (ensure-configfile-exists fuse-config)
 
-    (reset! settings (edn/read-string (slurp fusion-config)))
+    (reset! settings (edn/read-string (slurp fuse-config)))
     (log/info "Successfully read configuration file")
     @settings))
