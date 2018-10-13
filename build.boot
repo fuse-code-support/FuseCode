@@ -69,8 +69,8 @@
 
 (deftask fuse-bin []
   (comp
-   (aot :all true)
-   (uberbin)))
+   (uberbin)
+   (remove-bootstrap-binary)))
 
 
 (deftask all [] (comp (boot-bin) (fuse-bin) (remove-bootstrap-binary)))
