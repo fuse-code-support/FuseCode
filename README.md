@@ -11,8 +11,8 @@ be used for applications that are either:
 
 * Developer tools where the developer managers what plugins are loaded and takes responsibility
   for security (e.g.: programmers' tools).
-* Programs intended to run exclusively behind the firewall or with explicitly-trusted users
-  (e.g.: other software developers in the same organization.)
+* Programs intended to run exclusively behind the firewall and with explicitly-trusted users
+  (e.g.: other software developers in the same team.)
 
 ## This program
 
